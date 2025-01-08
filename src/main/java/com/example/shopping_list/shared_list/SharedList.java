@@ -24,8 +24,8 @@ public class SharedList {
   @Id
   @SequenceGenerator(name = "shared_list_sequence", sequenceName = "shared_list_sequence", allocationSize = 1)
   @GeneratedValue(generator = "shared_list_sequence", strategy = GenerationType.SEQUENCE)
-  private final Long id;
+  private Long id;
 
-  @ManyToOne @JoinColumn(name = "list_id", nullable = false) private final List listId;
-  @ManyToOne @JoinColumn(name = "userId", nullable = false) private final User userId;
+  @ManyToOne @JoinColumn(name = "list_id", nullable = false) private List listId;
+  @ManyToOne @JoinColumn(name = "userId", nullable = false) private User userId;
 }

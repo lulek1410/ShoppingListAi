@@ -24,13 +24,13 @@ public class ListItem {
   @Id
   @SequenceGenerator(name = "list_item_sequence", sequenceName = "list_item_sequence", allocationSize = 1)
   @GeneratedValue(generator = "list_item_sequence", strategy = GenerationType.SEQUENCE)
-  private final Long id;
+  private Long id;
 
-  @ManyToOne @JoinColumn(name = "list_id", nullable = false) private final List list;
+  @ManyToOne @JoinColumn(name = "list_id", nullable = false) private List list;
 
-  @Column(nullable = false, columnDefinition = "TEXT") private final String content;
+  @Column(nullable = false, columnDefinition = "TEXT") private String content;
 
   @Column(nullable = false) private boolean checked = false;
 
-  @Column(nullable = false) private final int itemOrder;
+  @Column(nullable = false) private int itemOrder;
 }

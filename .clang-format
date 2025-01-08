@@ -4,16 +4,16 @@ IndentWidth: 2
 ColumnLimit: 140
 BreakBeforeBraces: Custom
 BraceWrapping:
-    AfterFunction: false
-    AfterControlStatement: false
-    AfterClass: false
-    AfterEnum: false
-    AfterNamespace: false
-    AfterStruct: false
-    AfterUnion: false
-    BeforeCatch: false
-    BeforeElse: false
-    IndentBraces: false
+  AfterFunction: false
+  AfterControlStatement: false
+  AfterClass: false
+  AfterEnum: false
+  AfterNamespace: false
+  AfterStruct: false
+  AfterUnion: false
+  BeforeCatch: false
+  BeforeElse: false
+  IndentBraces: false
 AllowAllArgumentsOnNextLine: true
 BreakBeforeBinaryOperators: NonAssignment
 BreakBeforeTernaryOperators: true

@@ -24,9 +24,9 @@ public class List {
   @Id
   @SequenceGenerator(name = "list_sequence", sequenceName = "list_sequence", allocationSize = 1)
   @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "list_sequence")
-  private final Long id;
+  private Long id;
 
-  @Column(nullable = false, columnDefinition = "TEXT") private final String title;
+  @Column(nullable = false, columnDefinition = "TEXT") private String title;
 
-  @ManyToOne @JoinColumn(name = "owner_id", nullable = false) private final User owner;
+  @ManyToOne @JoinColumn(name = "owner_id", nullable = false) private User owner;
 }
