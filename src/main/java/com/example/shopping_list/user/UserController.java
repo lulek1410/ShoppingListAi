@@ -12,7 +12,7 @@ public class UserController {
 
   public UserController(UserService userService) { this.userService = userService; }
 
-  @GetMapping("/")
+  @GetMapping
   public String getMethodName(Authentication authentication) {
     return "Spring security In-memory authentication example " + authentication.getName();
   }
