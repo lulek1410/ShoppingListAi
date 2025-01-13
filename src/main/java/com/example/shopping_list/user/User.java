@@ -37,7 +37,7 @@ public class User implements UserDetails {
   @Column(nullable = false, columnDefinition = "TEXT") private String name;
   @Column(nullable = false, columnDefinition = "TEXT") private String surname;
 
-  User(String email, String password, String name, String surname) {
+  public User(String email, String password, String name, String surname) {
     this.name = name;
     this.surname = surname;
     this.password = password;

@@ -10,17 +10,27 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+
+import lombok.AllArgsConstructor;
 
 @Configuration
 @EnableWebSecurity
+@AllArgsConstructor
 public class SecurityConfiguration {
+  private final JWTAuthFilter jwtAuthFilter;
+
   @Bean
   SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
     http.csrf(csrf -> csrf.disable())
-      .authorizeHttpRequests(
-        authorizeHttp -> authorizeHttp.requestMatchers("/api/login", "/api/logout").permitAll().anyRequest().authenticated())
+      .authorizeHttpRequests(authorizeHttp
+                             -> authorizeHttp.requestMatchers("/api/auth/login", "/api/auth/register", "/api/auth/logout")
+                                  .permitAll()
+                                  .anyRequest()
+                                  .authenticated())
       .httpBasic(t -> {})
-      .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
+      .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+      .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
 
     return http.build();
   }
