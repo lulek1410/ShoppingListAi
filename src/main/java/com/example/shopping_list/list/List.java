@@ -29,4 +29,9 @@ public class List {
   @Column(nullable = false, columnDefinition = "TEXT") private String title;
 
   @ManyToOne @JoinColumn(name = "owner_id", nullable = false) private User owner;
+
+  public List(String title, User owner) {
+    this.title = title;
+    this.owner = owner;
+  }
 }

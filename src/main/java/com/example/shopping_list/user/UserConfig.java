@@ -16,7 +16,7 @@ public class UserConfig {
   private final PasswordEncoder encoder;
 
   @Bean
-  CommandLineRunner commandLineRunner(UserRepository repository) {
+  CommandLineRunner usrCommandLineRunner(UserRepository repository) {
     return args -> {
       User mike = new User("mike.example@mail.com", encoder.encode("simplePassphrase123%"), "Mike", "Jones");
       User angelika = new User("ann.mirco@mail.com", encoder.encode("abcd123#"), "Angelika", "Mirco");

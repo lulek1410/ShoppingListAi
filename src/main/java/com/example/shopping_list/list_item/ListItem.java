@@ -1,5 +1,7 @@
 package com.example.shopping_list.list_item;
 
+import org.hibernate.annotations.ColumnDefault;
+
 import com.example.shopping_list.list.List;
 
 import jakarta.persistence.Column;
@@ -30,7 +32,7 @@ public class ListItem {
 
   @Column(nullable = false, columnDefinition = "TEXT") private String content;
 
-  @Column(nullable = false) private boolean checked = false;
+  @Column(nullable = false) @ColumnDefault("false") private boolean checked;
 
   @Column(nullable = false) private int itemOrder;
 }

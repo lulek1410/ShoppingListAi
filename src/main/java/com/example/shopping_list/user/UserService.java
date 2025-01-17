@@ -3,6 +3,7 @@ package com.example.shopping_list.user;
 import java.util.NoSuchElementException;
 import java.util.Optional;
 
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -24,4 +25,8 @@ public class UserService implements UserDetailsService {
   }
 
   public User getUserById(Long id) { return userRepository.findById(id).orElseThrow(() -> new NoSuchElementException("User not found")); }
+
+  public Long getUserIdFromAuthentication(Authentication authentication) {
+    return authentication.getPrincipal() instanceof User user ? user.getId() : null;
+  }
 }
