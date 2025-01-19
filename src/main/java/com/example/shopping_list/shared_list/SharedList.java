@@ -11,6 +11,7 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.SequenceGenerator;
 import jakarta.persistence.Table;
+
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
@@ -27,5 +28,5 @@ public class SharedList {
   private Long id;
 
   @ManyToOne @JoinColumn(name = "list_id", nullable = false) private List listId;
-  @ManyToOne @JoinColumn(name = "userId", nullable = false) private User userId;
+  @ManyToOne @JoinColumn(name = "user_id", nullable = false) private User userId;
 }

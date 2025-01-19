@@ -23,5 +23,7 @@ JavaImportGroups:
   - org
   - com.example
   - com
+  - jakarta
+  - lombok
   - static
 SortJavaStaticImport: Before
