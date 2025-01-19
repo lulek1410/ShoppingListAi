@@ -26,13 +26,13 @@ public class AuthService {
   private final AuthenticationManager authenticationManager;
   private final JWTService jwtService;
 
-  public ResponseEntity<Response> login(LoginRequest request) {
+  public ResponseEntity<Object> login(LoginRequest request) {
     try {
       Authentication auth =
         authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword()));
       User user = (User)auth.getPrincipal();
       String token = jwtService.createToken(user);
-      return ResponseEntity.ok(new Response(token));
+      return ResponseEntity.ok(new LoginResponse(user, token));
     } catch (BadCredentialsException e) {
       return ResponseEntity.badRequest().body(new Response("Invalid credentials!"));
     } catch (Exception e) {
