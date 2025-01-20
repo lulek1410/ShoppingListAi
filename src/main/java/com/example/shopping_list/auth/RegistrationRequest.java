@@ -1,11 +1,17 @@
 package com.example.shopping_list.auth;
 
+import com.example.shopping_list.dto.response.UserDataResponse;
+
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 @Data
-public class RegistrationRequest {
-  private final String email;
+@EqualsAndHashCode(callSuper = true)
+public class RegistrationRequest extends UserDataResponse {
   private final String password;
-  private final String name;
-  private final String surname;
+
+  public RegistrationRequest(String password, String email, String name, String surname) {
+    super(email, name, surname);
+    this.password = password;
+  }
 }
