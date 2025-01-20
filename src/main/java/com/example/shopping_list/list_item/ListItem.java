@@ -1,5 +1,7 @@
 package com.example.shopping_list.list_item;
 
+import java.io.Serializable;
+
 import org.hibernate.annotations.ColumnDefault;
 
 import com.example.shopping_list.list.List;
@@ -23,7 +25,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @RequiredArgsConstructor
-public class ListItem {
+public class ListItem implements Serializable {
   @Id
   @SequenceGenerator(name = "list_item_sequence", sequenceName = "list_item_sequence", allocationSize = 1)
   @GeneratedValue(generator = "list_item_sequence", strategy = GenerationType.SEQUENCE)
@@ -36,4 +38,10 @@ public class ListItem {
   @Column(nullable = false) @ColumnDefault("false") private boolean checked;
 
   @Column(nullable = false) private int itemOrder;
+
+  public ListItem(List list, String content, int itemOrder) {
+    this.list = list;
+    this.content = content;
+    this.itemOrder = itemOrder;
+  }
 }

@@ -12,7 +12,6 @@ import org.springframework.security.core.userdetails.UserDetails;
 
 import com.example.shopping_list.list.List;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import jakarta.persistence.Column;
@@ -49,7 +48,7 @@ public class User implements UserDetails {
   @Column(nullable = false, columnDefinition = "TEXT") private String surname;
   @Column(nullable = false, columnDefinition = "TIMESTAMP", updatable = false) @JsonIgnore private Timestamp creationDate;
 
-  @ManyToMany(mappedBy = "users") @JsonBackReference private Set<List> lists = new HashSet<>();
+  @ManyToMany(mappedBy = "users") private Set<List> lists = new HashSet<>();
 
   public User(String email, String password, String name, String surname) {
     this.name = name;

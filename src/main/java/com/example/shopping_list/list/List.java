@@ -4,10 +4,10 @@ import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Set;
 
+import com.example.shopping_list.list_item.ListItem;
 import com.example.shopping_list.user.User;
 
-import com.fasterxml.jackson.annotation.JsonManagedReference;
-
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -16,6 +16,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.SequenceGenerator;
 import jakarta.persistence.Table;
 
@@ -38,8 +39,9 @@ public class List implements Serializable {
 
   @ManyToMany
   @JoinTable(name = "table_users", joinColumns = @JoinColumn(name = "list_id"), inverseJoinColumns = @JoinColumn(name = "user_id"))
-  @JsonManagedReference
   private Set<User> users = new HashSet<>();
+
+  @OneToMany(mappedBy = "list", orphanRemoval = true, cascade = CascadeType.ALL) private Set<ListItem> items = new HashSet<>();
 
   public List(String title, Set<User> users) {
     this.title = title;

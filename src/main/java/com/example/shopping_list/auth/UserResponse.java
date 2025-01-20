@@ -18,6 +18,12 @@ public class UserResponse {
     this.email = user.getEmail();
     this.name = user.getName();
     this.surname = user.getSurname();
-    this.lists = user.getLists().stream().map(list -> new ListResponse(list.getId(), list.getTitle())).collect(Collectors.toSet());
+    this.lists = user.getLists()
+                   .stream()
+                   .map(list -> {
+                     long checkedCount = list.getItems().stream().filter(item -> !item.isChecked()).count();
+                     return new ListResponse(list.getId(), list.getTitle(), checkedCount);
+                   })
+                   .collect(Collectors.toSet());
   }
 }
