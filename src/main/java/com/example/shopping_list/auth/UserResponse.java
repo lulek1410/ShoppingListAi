@@ -15,7 +15,7 @@ public class UserResponse extends UserDataResponse {
   private final Set<ListWithUncheckedItemsCountResponse> lists;
 
   public UserResponse(User user) {
-    super(user.getEmail(), user.getName(), user.getSurname());
+    super(user);
     this.lists = user.getLists()
                    .stream()
                    .map(list -> {
