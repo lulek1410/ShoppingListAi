@@ -38,7 +38,7 @@ public class ListController {
       return ResponseEntity.status(HttpStatus.FORBIDDEN).body(new Response(error.getMessage()));
     } catch (Exception error) {
       log.error("ListController::getList: List could not be created " + error.getMessage());
-      return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new Response("Could not get list. Please try again later."));
+      return ResponseEntity.internalServerError().body(new Response("Could not get list. Please try again later."));
     }
   }
 
@@ -49,7 +49,7 @@ public class ListController {
       return ResponseEntity.created(URI.create("api/list/create")).body(new Response("List created"));
     } catch (Exception error) {
       log.error("ListController::createList: List could not be created " + error.getMessage());
-      return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new Response("List could not be created. Try again later."));
+      return ResponseEntity.internalServerError().body(new Response("List could not be created. Try again later."));
     }
   }
 }

@@ -30,9 +30,10 @@ public class Config {
 
       List list1 = new List("Fruits", Set.of(mike));
       List list2 = new List("Vegetables", Set.of(mike, angelika));
+      List list3 = new List("Empty", Set.of(angelika));
 
       mike.setLists(Set.of(list1, list2));
-      angelika.setLists(Set.of(list2));
+      angelika.setLists(Set.of(list2, list3));
 
       ListItem apple = new ListItem(list1, "apple x6", 1);
       ListItem orange = new ListItem(list1, "orange x4", 2);
@@ -43,7 +44,7 @@ public class Config {
       list2.setItems(Set.of(potato));
 
       userRepository.saveAll(java.util.List.of(mike, angelika));
-      listRepository.saveAll(java.util.List.of(list1, list2));
+      listRepository.saveAll(java.util.List.of(list1, list2, list3));
       listItemRepository.saveAll(java.util.List.of(apple, orange, banana, potato));
     };
   }
