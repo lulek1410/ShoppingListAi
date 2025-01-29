@@ -35,7 +35,7 @@ public class UserService implements UserDetailsService {
     return lists.stream().map(List::getId).collect(Collectors.toSet());
   }
 
-  public Long getUserIdFromAuthentication(Authentication authentication) {
-    return authentication.getPrincipal() instanceof User user ? user.getId() : null;
+  public User getUserFromAuthentication(Authentication authentication) {
+    return authentication.getPrincipal() instanceof User user ? user : null;
   }
 }

@@ -38,7 +38,7 @@ public class List implements Serializable {
   @Column(nullable = false, columnDefinition = "TEXT") private String title;
 
   @ManyToMany
-  @JoinTable(name = "table_users", joinColumns = @JoinColumn(name = "list_id"), inverseJoinColumns = @JoinColumn(name = "user_id"))
+  @JoinTable(name = "lists_users", joinColumns = @JoinColumn(name = "list_id"), inverseJoinColumns = @JoinColumn(name = "user_id"))
   private Set<User> users = new HashSet<>();
 
   @OneToMany(mappedBy = "list", orphanRemoval = true, cascade = CascadeType.ALL) private Set<ListItem> items = new HashSet<>();
