@@ -2,6 +2,7 @@ package com.example.shopping_list.web_socket;
 
 import java.util.Set;
 
+import org.apache.coyote.BadRequestException;
 import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Component;
 import org.springframework.web.socket.CloseStatus;
@@ -27,34 +28,42 @@ public class WebSocketHandler extends TextWebSocketHandler {
     this.jwtService = jwtService;
   }
 
-  @Override
-  public void afterConnectionEstablished(@NonNull WebSocketSession session) throws Exception {
+  private Long getUserIdFromSession(@NonNull WebSocketSession session) throws BadRequestException {
     String authHeader = session.getHandshakeHeaders().getFirst("Authorization");
     if (authHeader == null) {
-      log.error("WebSocketHandler::afterConnectionEstablished: Authorization header not provided");
-      return;
+      log.error("WebSocketHandler::getUserIdFromSession: Authorization header not provided");
+      throw new BadRequestException("WebSocketHandler::getUserIdFromSession: Authorization header not provided");
     }
     if (!authHeader.startsWith("Bearer ")) {
-      log.error("WebSocketHandler::afterConnectionEstablished: Authorization header invalid");
-      return;
+      log.error("WebSocketHandler::getUserIdFromSession: Authorization header invalid");
+      throw new BadRequestException("WebSocketHandler::getUserIdFromSession: Authorization header is not valid");
     }
     String token = authHeader.substring(7);
     Long userId = jwtService.generateUserIdFromToken(token);
     if (userId == null) {
+      throw new BadRequestException("WebSocketHandler::getUserIdFromSession: Token invalid");
+    }
+    return userId;
+  }
+
+  @Override
+  public void afterConnectionEstablished(@NonNull WebSocketSession session) throws Exception {
+    final Long userId = getUserIdFromSession(session);
+    if (userId == null) {
       return;
     }
-    log.info(userId.toString());
     Set<Long> userListIds = userService.getUserListIds(userId);
     for (Long listId : userListIds) {
-      roomService.addUserToRoom(listId, session);
+      roomService.addUserToRoom(listId, userId, session);
     }
   }
 
   @Override
   public void afterConnectionClosed(@NonNull WebSocketSession session, @NonNull CloseStatus status) throws Exception {
+    Long userId = getUserIdFromSession(session);
     Set<Long> rooms = roomService.getActiveRooms();
     for (Long listId : rooms) {
-      roomService.removeUserFromRoom(listId, session);
+      roomService.removeUserFromRoom(listId, userId);
     }
   }
 }
