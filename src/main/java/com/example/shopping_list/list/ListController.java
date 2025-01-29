@@ -13,6 +13,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 
+import com.example.shopping_list.dto.exception.ResourceNotFoundException;
+import com.example.shopping_list.dto.request.AddListItem;
 import com.example.shopping_list.dto.request.CreateListRequest;
 import com.example.shopping_list.dto.response.Response;
 
@@ -32,7 +34,7 @@ public class ListController {
   public ResponseEntity<Object> getList(@PathVariable Long id, Authentication auth) {
     try {
       return ResponseEntity.ok().body(listService.getListData(id, auth));
-    } catch (EntityNotFoundException error) {
+    } catch (ResourceNotFoundException error) {
       return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new Response(error.getMessage()));
     } catch (AccessDeniedException error) {
       return ResponseEntity.status(HttpStatus.FORBIDDEN).body(new Response(error.getMessage()));
@@ -50,6 +52,19 @@ public class ListController {
     } catch (Exception error) {
       log.error("ListController::createList: List could not be created " + error.getMessage());
       return ResponseEntity.internalServerError().body(new Response("List could not be created. Try again later."));
+    }
+  }
+
+  @PostMapping("/addItem")
+  public ResponseEntity<Object> addItem(@RequestBody AddListItem req, Authentication auth) {
+    try {
+      listService.addItem(req, auth);
+      return ResponseEntity.created(URI.create("api/list/addItem")).body(new Response("Item created."));
+    } catch (ResourceNotFoundException error) {
+      return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new Response(error.getMessage()));
+    } catch (Exception error) {
+      return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+        .body(new Response("Something went wrong when adding an item. Please try again later."));
     }
   }
 }
