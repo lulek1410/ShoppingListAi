@@ -9,6 +9,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketSession;
 
+import com.example.shopping_list.dto.response.notification.Notification;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import lombok.extern.slf4j.Slf4j;
 
 @Service
@@ -36,21 +40,27 @@ public class RoomService {
     }
   }
 
-  public void notifyRoom(Long listId, Long triggeringUserId, String message) {
+  public void notifyRoom(Long listId, Long triggeringUserId, Notification notificationContent) {
     Set<WebSocketSession> room = rooms.get(listId);
     if (room == null) {
       log.error("RoomService::notifyRoom: room with id: " + listId + " does not exist");
       return;
     }
-    TextMessage notification = new TextMessage(message);
-    WebSocketSession triggeringSession = usersSessions.get(triggeringUserId);
-    room.stream().filter(session -> !session.equals(triggeringSession)).forEach(session -> {
-      try {
-        session.sendMessage(notification);
-      } catch (IOException e) {
-        e.printStackTrace();
-      }
-    });
+    try {
+      String messageJson = new ObjectMapper().writeValueAsString(notificationContent);
+      TextMessage notification = new TextMessage(messageJson);
+
+      WebSocketSession triggeringSession = usersSessions.get(triggeringUserId);
+      room.stream().filter(session -> !session.equals(triggeringSession)).forEach(session -> {
+        try {
+          session.sendMessage(notification);
+        } catch (IOException e) {
+          log.error("Error sending WebSocket message", e);
+        }
+      });
+    } catch (Exception e) {
+      log.error("Error serializing message object", e);
+    }
   }
 
   public Set<Long> getActiveRooms() { return rooms.keySet(); }

@@ -1,4 +1,4 @@
-package com.example.shopping_list.dto.response;
+package com.example.shopping_list.dto.response.notification;
 
 public enum NotificationType {
   MESSAGE,

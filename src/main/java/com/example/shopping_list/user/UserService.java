@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.example.shopping_list.dto.exception.ResourceNotFoundException;
+import com.example.shopping_list.dto.response.notification.Notification;
 import com.example.shopping_list.list.List;
 import com.example.shopping_list.list.ListRepository;
 import com.example.shopping_list.web_socket.RoomService;
@@ -67,6 +68,8 @@ public class UserService implements UserDetailsService {
     listRepository.save(list);
     roomService.removeUserFromRoom(listId, userId);
     roomService.notifyRoom(
-      listId, userId, "User \"" + user.getName() + " " + user.getSurname() + "\" has left the list \"" + list.getTitle() + "\"");
+      listId,
+      userId,
+      new Notification("User \"" + user.getName() + " " + user.getSurname() + "\" has left the list \"" + list.getTitle() + "\""));
   }
 }
