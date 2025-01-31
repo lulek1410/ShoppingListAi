@@ -26,7 +26,7 @@ public class UserController {
   public ResponseEntity<Object> removeList(@PathVariable Long listId, Authentication authentication) {
     try {
       userService.removeList(listId, authentication);
-      return ResponseEntity.ok().build();
+      return ResponseEntity.ok().body(new Response("List removed."));
     } catch (AccessDeniedException error) {
       return ResponseEntity.status(HttpStatus.FORBIDDEN).body(new Response(error.getMessage()));
     } catch (ResourceNotFoundException error) {
