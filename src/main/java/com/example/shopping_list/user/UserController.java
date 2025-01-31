@@ -12,15 +12,15 @@ import org.springframework.web.bind.annotation.RestController;
 import com.example.shopping_list.dto.exception.ResourceNotFoundException;
 import com.example.shopping_list.dto.response.Response;
 
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 @RestController
 @RequestMapping(path = "api/user")
 @Slf4j
+@RequiredArgsConstructor
 public class UserController {
   private final UserService userService;
-
-  public UserController(UserService userService) { this.userService = userService; }
 
   @DeleteMapping("/removeList/{listId}")
   public ResponseEntity<Object> removeList(@PathVariable Long listId, Authentication authentication) {

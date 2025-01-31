@@ -20,22 +20,15 @@ import com.example.shopping_list.user_list.UserListRepository;
 import com.example.shopping_list.utils.UserUtils;
 import com.example.shopping_list.web_socket.RoomService;
 
+import lombok.RequiredArgsConstructor;
+
 @Service
+@RequiredArgsConstructor
 public class UserService implements UserDetailsService {
   private final UserRepository userRepository;
   private final UserListRepository userListRepository;
   private final ListRepository listRepository;
   private final RoomService roomService;
-
-  public UserService(UserRepository userRepository,
-                     ListRepository listRepository,
-                     RoomService roomService,
-                     UserListRepository userListRepository) {
-    this.userRepository = userRepository;
-    this.listRepository = listRepository;
-    this.roomService = roomService;
-    this.userListRepository = userListRepository;
-  }
 
   @Override
   public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {

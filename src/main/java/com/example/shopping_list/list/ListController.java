@@ -18,15 +18,15 @@ import com.example.shopping_list.dto.request.AddListItem;
 import com.example.shopping_list.dto.request.CreateListRequest;
 import com.example.shopping_list.dto.response.Response;
 
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 @Controller
 @Slf4j
 @RequestMapping(path = "api/list")
+@RequiredArgsConstructor
 public class ListController {
   private final ListService listService;
-
-  public ListController(ListService listService) { this.listService = listService; }
 
   @GetMapping(path = "/{id}")
   public ResponseEntity<Object> getList(@PathVariable Long id, Authentication auth) {

@@ -23,25 +23,16 @@ import com.example.shopping_list.web_socket.RoomService;
 
 import jakarta.persistence.EntityNotFoundException;
 
+import lombok.RequiredArgsConstructor;
+
 @Service
+@RequiredArgsConstructor
 public class ListService {
   private final ListRepository listRepository;
   private final ListItemRepository listItemRepository;
   private final UserListRepository userListRepository;
   private final UserRepository userRepository;
   private final RoomService roomService;
-
-  public ListService(ListRepository listRepository,
-                     RoomService roomService,
-                     ListItemRepository listItemRepository,
-                     UserListRepository userListRepository,
-                     UserRepository userRepository) {
-    this.listRepository = listRepository;
-    this.roomService = roomService;
-    this.listItemRepository = listItemRepository;
-    this.userListRepository = userListRepository;
-    this.userRepository = userRepository;
-  }
 
   public ListResponse getListData(Long id, Authentication auth) throws EntityNotFoundException, AccessDeniedException {
     final List list =
