@@ -17,14 +17,14 @@ import jakarta.persistence.SequenceGenerator;
 import jakarta.persistence.Table;
 
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Entity
 @Table(name = "list_items")
 @Getter
 @Setter
-@RequiredArgsConstructor
+@NoArgsConstructor
 public class ListItem implements Serializable {
   @Id
   @SequenceGenerator(name = "list_item_sequence", sequenceName = "list_item_sequence", allocationSize = 1)

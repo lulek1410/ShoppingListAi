@@ -13,6 +13,8 @@ import com.example.shopping_list.list_item.ListItem;
 import com.example.shopping_list.list_item.ListItemRepository;
 import com.example.shopping_list.user.User;
 import com.example.shopping_list.user.UserRepository;
+import com.example.shopping_list.user_list.UserList;
+import com.example.shopping_list.user_list.UserListRepository;
 
 import lombok.RequiredArgsConstructor;
 
@@ -23,17 +25,22 @@ public class Config {
   private final PasswordEncoder encoder;
 
   @Bean
-  CommandLineRunner commandLineRunner(UserRepository userRepository, ListRepository listRepository, ListItemRepository listItemRepository) {
+  CommandLineRunner commandLineRunner(UserRepository userRepository,
+                                      ListRepository listRepository,
+                                      ListItemRepository listItemRepository,
+                                      UserListRepository userListRepository) {
     return args -> {
       User mike = new User("mike.example@mail.com", encoder.encode("simplePassphrase123%"), "Mike", "Jones");
       User angelika = new User("ann.mirco@mail.com", encoder.encode("abcd123#"), "Angelika", "Mirco");
 
-      List list1 = new List("Fruits", Set.of(mike));
-      List list2 = new List("Vegetables", Set.of(mike, angelika));
-      List list3 = new List("Empty", Set.of(angelika));
+      List list1 = new List("Fruits");
+      List list2 = new List("Vegetables");
+      List list3 = new List("Empty");
 
-      mike.setLists(Set.of(list1, list2));
-      angelika.setLists(Set.of(list2, list3));
+      UserList userList1 = new UserList(mike, list1, 1);
+      UserList userList2 = new UserList(mike, list2, 2);
+      UserList userList3 = new UserList(angelika, list2, 2);
+      UserList userList4 = new UserList(angelika, list3, 1);
 
       ListItem apple = new ListItem(list1, "apple x6", 1);
       ListItem orange = new ListItem(list1, "orange x4", 2);
@@ -45,6 +52,7 @@ public class Config {
 
       userRepository.saveAll(java.util.List.of(mike, angelika));
       listRepository.saveAll(java.util.List.of(list1, list2, list3));
+      userListRepository.saveAll(java.util.List.of(userList1, userList2, userList3, userList4));
       listItemRepository.saveAll(java.util.List.of(apple, orange, banana, potato));
     };
   }

@@ -4,13 +4,9 @@ import java.sql.Timestamp;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
-import java.util.HashSet;
-import java.util.Set;
 
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
-
-import com.example.shopping_list.list.List;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
@@ -19,7 +15,6 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.ManyToMany;
 import jakarta.persistence.SequenceGenerator;
 import jakarta.persistence.Table;
 import jakarta.persistence.UniqueConstraint;
@@ -47,8 +42,6 @@ public class User implements UserDetails {
   @Column(nullable = false, columnDefinition = "TEXT") private String name;
   @Column(nullable = false, columnDefinition = "TEXT") private String surname;
   @Column(nullable = false, columnDefinition = "TIMESTAMP", updatable = false) @JsonIgnore private Timestamp creationDate;
-
-  @ManyToMany(mappedBy = "users") private Set<List> lists = new HashSet<>();
 
   public User(String email, String password, String name, String surname) {
     this.name = name;

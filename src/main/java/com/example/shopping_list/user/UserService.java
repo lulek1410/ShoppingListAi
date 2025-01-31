@@ -2,7 +2,6 @@ package com.example.shopping_list.user;
 
 import java.util.Optional;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.Authentication;
@@ -16,18 +15,26 @@ import com.example.shopping_list.dto.exception.ResourceNotFoundException;
 import com.example.shopping_list.dto.response.notification.Notification;
 import com.example.shopping_list.list.List;
 import com.example.shopping_list.list.ListRepository;
+import com.example.shopping_list.user_list.UserListId;
+import com.example.shopping_list.user_list.UserListRepository;
+import com.example.shopping_list.utils.UserUtils;
 import com.example.shopping_list.web_socket.RoomService;
 
 @Service
 public class UserService implements UserDetailsService {
   private final UserRepository userRepository;
+  private final UserListRepository userListRepository;
   private final ListRepository listRepository;
   private final RoomService roomService;
 
-  public UserService(UserRepository userRepository, ListRepository listRepository, RoomService roomService) {
+  public UserService(UserRepository userRepository,
+                     ListRepository listRepository,
+                     RoomService roomService,
+                     UserListRepository userListRepository) {
     this.userRepository = userRepository;
     this.listRepository = listRepository;
     this.roomService = roomService;
+    this.userListRepository = userListRepository;
   }
 
   @Override
@@ -43,29 +50,22 @@ public class UserService implements UserDetailsService {
     return userRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("User not found"));
   }
 
-  public Set<Long> getUserListIds(Long userId) {
-    Set<List> lists = userRepository.getUserListsIds(userId);
-    return lists.stream().map(List::getId).collect(Collectors.toSet());
-  }
-
-  public User getUserFromAuthentication(Authentication authentication) {
-    return authentication.getPrincipal() instanceof User user ? user : null;
-  }
-
   @Transactional
   public void removeList(Long listId, Authentication authentication) throws ResourceNotFoundException, AccessDeniedException {
-    User user = this.getUserFromAuthentication(authentication);
+    User user = UserUtils.getUserFromAuthentication(authentication);
     Long userId = user.getId();
     List list = listRepository.findById(listId).orElseThrow(() -> new ResourceNotFoundException("List not found"));
-    if (list.getUsers().stream().noneMatch((listUser -> listUser.getId().equals(userId)))) {
+
+    Set<Long> listUsersIds = userListRepository.getUserIdsByListId(listId);
+    if (!listUsersIds.contains(userId)) {
       throw new AccessDeniedException("Can't remove list. List does not belong to you");
     }
-    if (list.getUsers().size() == 1) {
+
+    userListRepository.deleteById(new UserListId(userId, listId));
+    if (listUsersIds.size() == 1) {
       listRepository.delete(list);
-      return;
     }
-    list.setUsers(list.getUsers().stream().filter(u -> !u.getId().equals(userId)).collect(Collectors.toSet()));
-    listRepository.save(list);
+
     roomService.removeUserFromRoom(listId, userId);
     roomService.notifyRoom(
       listId,

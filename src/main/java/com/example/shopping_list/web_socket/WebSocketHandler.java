@@ -10,7 +10,7 @@ import org.springframework.web.socket.WebSocketSession;
 import org.springframework.web.socket.handler.TextWebSocketHandler;
 
 import com.example.shopping_list.security.JWTService;
-import com.example.shopping_list.user.UserService;
+import com.example.shopping_list.user_list.UserListRepository;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -18,12 +18,12 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class WebSocketHandler extends TextWebSocketHandler {
 
-  private final UserService userService;
+  private final UserListRepository userListItemRepository;
   private final RoomService roomService;
   private final JWTService jwtService;
 
-  public WebSocketHandler(UserService userService, RoomService roomService, JWTService jwtService) {
-    this.userService = userService;
+  public WebSocketHandler(UserListRepository userListItemRepository, RoomService roomService, JWTService jwtService) {
+    this.userListItemRepository = userListItemRepository;
     this.roomService = roomService;
     this.jwtService = jwtService;
   }
@@ -52,8 +52,8 @@ public class WebSocketHandler extends TextWebSocketHandler {
     if (userId == null) {
       return;
     }
-    Set<Long> userListIds = userService.getUserListIds(userId);
-    for (Long listId : userListIds) {
+    Set<Long> userListsIds = userListItemRepository.getListIdsByUserId(userId);
+    for (Long listId : userListsIds) {
       roomService.addUserToRoom(listId, userId, session);
     }
   }

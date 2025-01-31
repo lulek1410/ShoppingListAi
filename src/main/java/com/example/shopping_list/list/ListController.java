@@ -18,8 +18,6 @@ import com.example.shopping_list.dto.request.AddListItem;
 import com.example.shopping_list.dto.request.CreateListRequest;
 import com.example.shopping_list.dto.response.Response;
 
-import jakarta.persistence.EntityNotFoundException;
-
 import lombok.extern.slf4j.Slf4j;
 
 @Controller
@@ -47,7 +45,7 @@ public class ListController {
   @PostMapping("/create")
   public ResponseEntity<Object> createList(@RequestBody CreateListRequest req, Authentication auth) {
     try {
-      listService.createList(req.getTitle(), auth);
+      listService.createList(req, auth);
       return ResponseEntity.created(URI.create("api/list/create")).body(new Response("List created"));
     } catch (Exception error) {
       log.error("ListController::createList: List could not be created " + error.getMessage());
