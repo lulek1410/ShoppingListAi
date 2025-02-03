@@ -60,7 +60,7 @@ class UserServiceUTest {
   }
 
   @Test
-  void testLoadUserByUsername_userFound() {
+  void testLoadUserByUsername_UserFound() {
     final String email = "test@example.com";
     when(userRepository.findByEmail(email)).thenReturn(Optional.of(testUser));
 
@@ -72,7 +72,7 @@ class UserServiceUTest {
   }
 
   @Test
-  void testLoadUserByUsername_userNotFound() {
+  void testLoadUserByUsername_UserNotFound() {
     final String email = "error@example.com";
     when(userRepository.findByEmail(email)).thenReturn(Optional.empty());
 
