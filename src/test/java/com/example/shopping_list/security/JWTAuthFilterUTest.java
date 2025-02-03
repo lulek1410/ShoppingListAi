@@ -18,8 +18,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 
-import com.example.shopping_list.security.JWTAuthFilter;
-import com.example.shopping_list.security.JWTService;
 import com.example.shopping_list.user.User;
 import com.example.shopping_list.user.UserService;
 
