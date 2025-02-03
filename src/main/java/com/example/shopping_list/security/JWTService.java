@@ -25,7 +25,6 @@ public class JWTService {
       .claim("email", user.getEmail())
       .issuedAt(new Date())
       .issuer("shopping-list")
-      .expiration(new Date(System.currentTimeMillis() + 1000 * 60 * 30))
       .signWith(getSignKey())
       .compact();
   }
