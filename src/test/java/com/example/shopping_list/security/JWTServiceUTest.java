@@ -19,7 +19,7 @@ import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.MalformedJwtException;
 
 @ExtendWith(MockitoExtension.class)
-class JWTServiceTest {
+class JWTServiceUTest {
 
   private JWTService jwtService;
 
