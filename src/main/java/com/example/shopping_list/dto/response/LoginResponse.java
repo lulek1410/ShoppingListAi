@@ -19,4 +19,10 @@ public class LoginResponse extends Response {
     this.user = new UserResponse(user, userLists);
     this.token = token;
   }
+
+  public LoginResponse(LoginResponse loginResponse, String message) {
+    super(message);
+    this.user = loginResponse.getUser();
+    this.token = loginResponse.getToken();
+  }
 }

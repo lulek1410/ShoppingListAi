@@ -1,13 +1,13 @@
 package com.example.shopping_list.dto.request;
 
-import com.example.shopping_list.dto.response.UserDataResponse;
+import com.example.shopping_list.dto.UserData;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
 @Data
 @EqualsAndHashCode(callSuper = true)
-public class RegistrationRequest extends UserDataResponse {
+public class RegistrationRequest extends UserData {
   private final String password;
 
   public RegistrationRequest(String password, String email, String name, String surname) {

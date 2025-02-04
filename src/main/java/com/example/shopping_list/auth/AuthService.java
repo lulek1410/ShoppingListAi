@@ -55,21 +55,8 @@ public class AuthService {
     if (userRepository.findByEmail(request.getEmail()).isPresent()) {
       return ResponseEntity.badRequest().body(new Response("User already exists!"));
     }
-
     User user = new User(request.getEmail(), passwordEncoder.encode(request.getPassword()), request.getName(), request.getSurname());
     User savedUser = userRepository.save(user);
-    ResponseEntity<Response> resp = login(new LoginRequest(request.getEmail(), request.getPassword()));
-    if (!resp.getStatusCode().is2xxSuccessful() || !resp.hasBody() || resp.getBody() == null) {
-      return ResponseEntity.badRequest().body(new Response("User created but cant be logged in."));
-    }
-
-    LoginResponse loginResponse = (LoginResponse)resp.getBody();
-    if (loginResponse == null) {
-      return ResponseEntity.badRequest().body(new Response("User created but cant be logged in. Login data empty."));
-    }
-
-    LoginResponse registerResponse = new LoginResponse(
-      savedUser, userListRepository.getListsByUserId(savedUser.getId()), loginResponse.getToken(), "User registered successfully!");
-    return ResponseEntity.created(URI.create("/api/users/" + savedUser.getId())).body(registerResponse);
+    return ResponseEntity.created(URI.create("/api/users/" + savedUser.getId())).body(new Response("User registered successfully!"));
   }
 }

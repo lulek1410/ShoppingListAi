@@ -1,20 +1,18 @@
 package com.example.shopping_list.dto.response;
 
+import com.example.shopping_list.dto.UserData;
 import com.example.shopping_list.user.User;
 
 import lombok.Data;
-import lombok.RequiredArgsConstructor;
+import lombok.EqualsAndHashCode;
 
 @Data
-@RequiredArgsConstructor
-public class UserDataResponse {
-  private final String email;
-  private final String name;
-  private final String surname;
+@EqualsAndHashCode(callSuper = true)
+public class UserDataResponse extends UserData {
+  private final Long id;
 
   public UserDataResponse(User user) {
-    this.email = user.getEmail();
-    this.name = user.getName();
-    this.surname = user.getSurname();
+    super(user.getEmail(), user.getName(), user.getSurname());
+    this.id = user.getId();
   }
 }
