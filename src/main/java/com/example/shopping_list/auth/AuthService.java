@@ -11,6 +11,9 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import com.example.shopping_list.dto.request.LoginRequest;
+import com.example.shopping_list.dto.request.RegistrationRequest;
+import com.example.shopping_list.dto.response.LoginResponse;
 import com.example.shopping_list.dto.response.Response;
 import com.example.shopping_list.list.List;
 import com.example.shopping_list.security.JWTService;

@@ -1,6 +1,4 @@
-package com.example.shopping_list.auth;
-
-import com.example.shopping_list.dto.response.ListDataResponse;
+package com.example.shopping_list.dto.response;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;

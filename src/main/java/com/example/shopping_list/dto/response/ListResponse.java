@@ -1,9 +1,9 @@
-package com.example.shopping_list.list;
+package com.example.shopping_list.dto.response;
 
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import com.example.shopping_list.dto.response.ListDataResponse;
+import com.example.shopping_list.list.List;
 import com.example.shopping_list.user.User;
 
 import lombok.Data;

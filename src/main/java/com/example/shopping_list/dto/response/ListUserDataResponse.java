@@ -1,6 +1,5 @@
-package com.example.shopping_list.list;
+package com.example.shopping_list.dto.response;
 
-import com.example.shopping_list.dto.response.UserDataResponse;
 import com.example.shopping_list.user.User;
 
 import lombok.Data;

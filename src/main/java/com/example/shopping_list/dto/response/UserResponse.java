@@ -1,9 +1,8 @@
-package com.example.shopping_list.auth;
+package com.example.shopping_list.dto.response;
 
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import com.example.shopping_list.dto.response.UserDataResponse;
 import com.example.shopping_list.list.List;
 import com.example.shopping_list.user.User;
 

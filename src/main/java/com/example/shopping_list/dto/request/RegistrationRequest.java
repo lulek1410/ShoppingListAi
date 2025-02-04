@@ -1,4 +1,4 @@
-package com.example.shopping_list.auth;
+package com.example.shopping_list.dto.request;
 
 import com.example.shopping_list.dto.response.UserDataResponse;
 

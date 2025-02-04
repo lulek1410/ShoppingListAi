@@ -11,6 +11,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.example.shopping_list.dto.exception.ResourceNotFoundException;
 import com.example.shopping_list.dto.request.AddListItem;
 import com.example.shopping_list.dto.request.CreateListRequest;
+import com.example.shopping_list.dto.response.ListResponse;
 import com.example.shopping_list.dto.response.notification.ItemCreationNotification;
 import com.example.shopping_list.list_item.ListItem;
 import com.example.shopping_list.list_item.ListItemRepository;
