@@ -1,6 +1,7 @@
-package com.example.shopping_list.user;
+package com.example.shopping_list.user_list;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.Set;
 
@@ -10,8 +11,7 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 
 import com.example.shopping_list.list.List;
-import com.example.shopping_list.user_list.UserList;
-import com.example.shopping_list.user_list.UserListRepository;
+import com.example.shopping_list.user.User;
 
 @DataJpaTest
 class UserListRepositoryITest {
