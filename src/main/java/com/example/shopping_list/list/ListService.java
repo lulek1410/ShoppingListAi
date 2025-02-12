@@ -9,8 +9,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.example.shopping_list.dto.exception.ResourceNotFoundException;
-import com.example.shopping_list.dto.request.AddListItem;
+import com.example.shopping_list.dto.request.AddListItemRequest;
 import com.example.shopping_list.dto.request.CreateListRequest;
+import com.example.shopping_list.dto.response.ListItemResponse;
 import com.example.shopping_list.dto.response.ListResponse;
 import com.example.shopping_list.dto.response.notification.ItemCreationNotification;
 import com.example.shopping_list.list_item.ListItem;
@@ -50,15 +51,16 @@ public class ListService {
   }
 
   @Transactional
-  public void createList(CreateListRequest req, Authentication auth) {
+  public ListResponse createList(CreateListRequest req, Authentication auth) {
     final User user = UserUtils.getUserFromAuthentication(auth);
     final List newList = new List(req.getTitle());
     final List savedList = listRepository.save(newList);
     userListRepository.save(new UserList(user, savedList, req.getOrder()));
+    return new ListResponse(savedList, Set.of(user));
   }
 
   @Transactional
-  public void addItem(AddListItem req, Authentication auth) {
+  public ListItemResponse addItem(AddListItemRequest req, Authentication auth) {
     final Long listId = req.getListId();
     final List list =
       listRepository.findById(listId).orElseThrow(() -> new ResourceNotFoundException("List with id: " + listId + " does not exist!"));
@@ -67,7 +69,7 @@ public class ListService {
     final ListItem newListItem = new ListItem(list, itemContent, req.getOrder());
     final ListItem savedItem = listItemRepository.save(newListItem);
 
-    list.getItems().add(newListItem);
+    list.getItems().add(savedItem);
     listRepository.save(list);
 
     final Long userId = UserUtils.getUserFromAuthentication(auth).getId();
@@ -76,5 +78,7 @@ public class ListService {
                                        + "\"" + itemContentMessage + "\""
                                        + " in list " + list.getTitle();
     roomService.notifyRoom(listId, userId, new ItemCreationNotification(notificationMessage, savedItem));
+
+    return new ListItemResponse(savedItem);
   }
 }

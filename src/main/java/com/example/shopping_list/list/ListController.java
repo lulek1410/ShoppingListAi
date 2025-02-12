@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import com.example.shopping_list.dto.exception.ResourceNotFoundException;
-import com.example.shopping_list.dto.request.AddListItem;
+import com.example.shopping_list.dto.request.AddListItemRequest;
 import com.example.shopping_list.dto.request.CreateListRequest;
 import com.example.shopping_list.dto.response.Response;
 
@@ -37,7 +37,7 @@ public class ListController {
     } catch (AccessDeniedException error) {
       return ResponseEntity.status(HttpStatus.FORBIDDEN).body(new Response(error.getMessage()));
     } catch (Exception error) {
-      log.error("ListController::getList: List could not be created " + error.getMessage());
+      log.error("ListController::getList: List could not be queried " + error.getMessage());
       return ResponseEntity.internalServerError().body(new Response("Could not get list. Please try again later."));
     }
   }
@@ -45,8 +45,7 @@ public class ListController {
   @PostMapping("/create")
   public ResponseEntity<Object> createList(@RequestBody CreateListRequest req, Authentication auth) {
     try {
-      listService.createList(req, auth);
-      return ResponseEntity.created(URI.create("api/list/create")).body(new Response("List created"));
+      return ResponseEntity.created(URI.create("api/list/create")).body(listService.createList(req, auth));
     } catch (Exception error) {
       log.error("ListController::createList: List could not be created " + error.getMessage());
       return ResponseEntity.internalServerError().body(new Response("List could not be created. Try again later."));
@@ -54,10 +53,9 @@ public class ListController {
   }
 
   @PostMapping("/addItem")
-  public ResponseEntity<Object> addItem(@RequestBody AddListItem req, Authentication auth) {
+  public ResponseEntity<Object> addItem(@RequestBody AddListItemRequest req, Authentication auth) {
     try {
-      listService.addItem(req, auth);
-      return ResponseEntity.created(URI.create("api/list/addItem")).body(new Response("Item created."));
+      return ResponseEntity.created(URI.create("api/list/addItem")).body(listService.addItem(req, auth));
     } catch (ResourceNotFoundException error) {
       return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new Response(error.getMessage()));
     } catch (Exception error) {

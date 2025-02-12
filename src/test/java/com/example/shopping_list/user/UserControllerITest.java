@@ -32,7 +32,7 @@ class UserControllerITest {
   }
 
   @Test
-  void removeList_shouldReturnForbidden_whenAccessDenied() throws Exception {
+  void removeList_shouldReturnForbidden_whenListNotAssignedToUser() throws Exception {
     User testUser = new User("testuser1@example.com", "password1", "John", "Doe");
     testUser.setId(1L);
 
@@ -42,7 +42,7 @@ class UserControllerITest {
   }
 
   @Test
-  void removeList_shouldReturnNotFound_whenResourceNotFound() throws Exception {
+  void removeList_shouldReturnNotFound_whenListNotFound() throws Exception {
     User testUser = new User("testuser1@example.com", "password1", "John", "Doe");
     testUser.setId(1L);
 

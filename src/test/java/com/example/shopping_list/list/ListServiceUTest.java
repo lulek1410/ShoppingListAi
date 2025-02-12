@@ -24,7 +24,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 
 import com.example.shopping_list.dto.exception.ResourceNotFoundException;
-import com.example.shopping_list.dto.request.AddListItem;
+import com.example.shopping_list.dto.request.AddListItemRequest;
 import com.example.shopping_list.dto.request.CreateListRequest;
 import com.example.shopping_list.dto.response.ListResponse;
 import com.example.shopping_list.dto.response.notification.ItemCreationNotification;
@@ -122,7 +122,7 @@ class ListServiceUTest {
   void addItem() {
     final Long listId = testList.getId();
     final String itemContent = "New item content";
-    final AddListItem request = new AddListItem(listId, itemContent, 0);
+    final AddListItemRequest request = new AddListItemRequest(listId, itemContent, 0);
 
     final ListItem newListItem = new ListItem(testList, itemContent, request.getOrder());
     newListItem.setId(2L);
