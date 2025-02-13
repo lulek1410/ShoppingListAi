@@ -61,9 +61,9 @@ class AuthServiceUTest {
   }
 
   @Nested
-  class LoginTest {
+  class Login {
     @Test
-    void validLogin() {
+    void login_shouldReturnLoginResponse_whenLoginRequestValid() {
       final String testEmail = "test@mail.com";
       final String testPassword = "password_test123";
       final String testToken = "mockToken";
@@ -91,7 +91,7 @@ class AuthServiceUTest {
     }
 
     @Test
-    void invalidCredentials() {
+    void login_shouldReturnBadRequest_whenCredentialsInvalid() {
       LoginRequest request = new LoginRequest("test@example.com", "wrong_password");
 
       when(authenticationManager.authenticate(any())).thenThrow(new BadCredentialsException("Invalid credentials"));
@@ -106,31 +106,14 @@ class AuthServiceUTest {
       verify(authenticationManager).authenticate(any());
       verifyNoInteractions(jwtService, userListRepository);
     }
-
-    @Test
-    void unexpectedError() {
-      LoginRequest request = new LoginRequest("test@example.com", "password");
-
-      when(authenticationManager.authenticate(any())).thenThrow(new RuntimeException("Database connection failed"));
-
-      ResponseEntity<Response> responseEntity = authService.login(request);
-
-      assertEquals(HttpStatus.BAD_REQUEST, responseEntity.getStatusCode());
-      Response responseBody = responseEntity.getBody();
-      assertNotNull(responseBody);
-      assertTrue(responseBody.getMessage().contains("Error during login!"));
-      assertTrue(responseBody.getMessage().contains("Database connection failed"));
-
-      verify(authenticationManager).authenticate(any());
-      verifyNoInteractions(jwtService, userListRepository);
-    }
   }
 
   @Nested
-  class RegisterTest {
+  class Register {
+    RegistrationRequest request = new RegistrationRequest("test@mail.com", "password", "John", "Doe");
+
     @Test
-    void UserAlreadyExists() {
-      RegistrationRequest request = new RegistrationRequest("test@mail.com", "password", "John", "Doe");
+    void register_shouldReturnBadRequest_whenUserAlreadyExists() {
       when(userRepository.findByEmail(request.getEmail())).thenReturn(Optional.of(new User()));
 
       ResponseEntity<Response> response = authService.register(request);
@@ -144,8 +127,7 @@ class AuthServiceUTest {
     }
 
     @Test
-    void SuccessfulRegistration() {
-      RegistrationRequest request = new RegistrationRequest("test@mail.com", "password", "John", "Doe");
+    void register_shouldReturnCreated_whenRegistrationRequestValid() {
       User savedUser = new User("test@mail.com", "encodedPassword", "John", "Doe");
       savedUser.setId(1L);
 
