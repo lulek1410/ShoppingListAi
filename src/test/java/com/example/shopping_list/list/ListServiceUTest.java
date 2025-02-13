@@ -13,6 +13,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
@@ -61,98 +62,106 @@ class ListServiceUTest {
     authentication = new UsernamePasswordAuthenticationToken(testUser, null);
   }
 
-  @Test
-  void getListData_ValidCase() {
-    final Long listId = testList.getId();
-    final Set<Long> userIds = Set.of(1L);
-    final java.util.List<User> users = java.util.List.of(testUser, new User("aditional@mail.com", "pass", "Michael", "Doe"));
-
-    when(listRepository.findById(listId)).thenReturn(Optional.of(testList));
-    when(userListRepository.getUserIdsByListId(listId)).thenReturn(userIds);
-    when(userRepository.findAllById(userIds)).thenReturn(users);
-
-    ListResponse listResponse = listService.getListData(listId, authentication);
-
-    assertEquals(listResponse, new ListResponse(testList, users.stream().collect(Collectors.toSet())));
-  }
-
-  @Test
-  void getListData_ListNotBelongToUser() {
-    final Long listId = testList.getId();
-    final Set<Long> userIds = Set.of(2L);
-
-    when(listRepository.findById(listId)).thenReturn(Optional.of(testList));
-    when(userListRepository.getUserIdsByListId(listId)).thenReturn(userIds);
-
-    AccessDeniedException error = assertThrows(AccessDeniedException.class, () -> listService.getListData(listId, authentication));
-
-    assertEquals("Requested list does not belong to you", error.getMessage());
-  }
-
-  @Test
-  void getListData_ListNotFound() {
+  @Nested
+  class GetListData {
     final Long listId = testList.getId();
 
-    when(listRepository.findById(listId)).thenReturn(Optional.empty());
+    @Test
+    void getListData_shouldReturnListResponse_whenListAssignedToUser() {
+      final Set<Long> userIds = Set.of(1L);
+      final java.util.List<User> users = java.util.List.of(testUser, new User("aditional@mail.com", "pass", "Michael", "Doe"));
 
-    ResourceNotFoundException error = assertThrows(ResourceNotFoundException.class, () -> listService.getListData(listId, authentication));
+      when(listRepository.findById(listId)).thenReturn(Optional.of(testList));
+      when(userListRepository.getUserIdsByListId(listId)).thenReturn(userIds);
+      when(userRepository.findAllById(userIds)).thenReturn(users);
 
-    assertEquals("List with id: " + listId + " does not exist!", error.getMessage());
-  }
+      ListResponse listResponse = listService.getListData(listId, authentication);
 
-  @Test
-  void createList() {
-    final CreateListRequest request = new CreateListRequest("new list title", 0);
-    final List newList = new List(request.getTitle());
-    newList.setId(2L);
+      assertEquals(listResponse, new ListResponse(testList, users.stream().collect(Collectors.toSet())));
+    }
 
-    try (var mockedUserUtils = mockStatic(UserUtils.class)) {
-      mockedUserUtils.when(() -> UserUtils.getUserFromAuthentication(authentication)).thenReturn(testUser);
+    @Test
+    void getListData_shouldThrowAccessDeniedException_whenListDoesNotBelongToUser() {
+      final Set<Long> userIds = Set.of(2L);
 
-      when(listRepository.save(any(List.class))).thenReturn(newList);
+      when(listRepository.findById(listId)).thenReturn(Optional.of(testList));
+      when(userListRepository.getUserIdsByListId(listId)).thenReturn(userIds);
 
-      listService.createList(request, authentication);
+      AccessDeniedException error = assertThrows(AccessDeniedException.class, () -> listService.getListData(listId, authentication));
 
-      verify(listRepository).save(any(List.class));
-      verify(userListRepository).save(any(UserList.class));
+      assertEquals("Requested list does not belong to you", error.getMessage());
+    }
+
+    @Test
+    void getListData_shouldThrowResourceNotFoundException_whenListNotFound() {
+      when(listRepository.findById(listId)).thenReturn(Optional.empty());
+
+      ResourceNotFoundException error =
+        assertThrows(ResourceNotFoundException.class, () -> listService.getListData(listId, authentication));
+
+      assertEquals("List with id: " + listId + " does not exist!", error.getMessage());
     }
   }
 
-  @Test
-  void addItem() {
-    final Long listId = testList.getId();
-    final String itemContent = "New item content";
-    final AddListItemRequest request = new AddListItemRequest(listId, itemContent, 0);
+  @Nested
+  class CreateList {
+    @Test
+    void createList_shouldSaveNewList_whenCreateListRequestValid() {
+      final CreateListRequest request = new CreateListRequest("new list title", 0);
+      final List newList = new List(request.getTitle());
+      newList.setId(2L);
 
-    final ListItem newListItem = new ListItem(testList, itemContent, request.getOrder());
-    newListItem.setId(2L);
+      try (var mockedUserUtils = mockStatic(UserUtils.class)) {
+        mockedUserUtils.when(() -> UserUtils.getUserFromAuthentication(authentication)).thenReturn(testUser);
 
-    try (var mockedUserUtils = mockStatic(UserUtils.class)) {
-      mockedUserUtils.when(() -> UserUtils.getUserFromAuthentication(authentication)).thenReturn(testUser);
+        when(listRepository.save(any(List.class))).thenReturn(newList);
 
-      when(listRepository.findById(listId)).thenReturn(Optional.of(testList));
-      when(listItemRepository.save(any(ListItem.class))).thenReturn(newListItem);
+        listService.createList(request, authentication);
 
-      listService.addItem(request, authentication);
+        verify(listRepository).save(any(List.class));
+        verify(userListRepository).save(any(UserList.class));
+      }
+    }
+  }
 
-      ArgumentCaptor<ListItem> listItemCaptor = ArgumentCaptor.forClass(ListItem.class);
-      verify(listItemRepository).save(listItemCaptor.capture());
-      ListItem capturedListItem = listItemCaptor.getValue();
+  @Nested
+  class AddItem {
+    @Test
+    void addItem_shouldCreateNewItem_whenAddListItemRequestValid() {
+      final Long listId = testList.getId();
+      final String itemContent = "New item content";
+      final AddListItemRequest request = new AddListItemRequest(listId, itemContent, 0);
 
-      assertEquals(itemContent, capturedListItem.getContent());
-      assertEquals(testList, capturedListItem.getList());
-      assertEquals(request.getOrder(), capturedListItem.getItemOrder());
+      final ListItem newListItem = new ListItem(testList, itemContent, request.getOrder());
+      newListItem.setId(2L);
 
-      verify(listRepository).save(testList);
+      try (var mockedUserUtils = mockStatic(UserUtils.class)) {
+        mockedUserUtils.when(() -> UserUtils.getUserFromAuthentication(authentication)).thenReturn(testUser);
 
-      ArgumentCaptor<ItemCreationNotification> notificationCaptor = ArgumentCaptor.forClass(ItemCreationNotification.class);
-      verify(roomService).notifyRoom(eq(listId), eq(testUser.getId()), notificationCaptor.capture());
+        when(listRepository.findById(listId)).thenReturn(Optional.of(testList));
+        when(listItemRepository.save(any(ListItem.class))).thenReturn(newListItem);
 
-      ItemCreationNotification capturedNotification = notificationCaptor.getValue();
+        listService.addItem(request, authentication);
 
-      String expectedMessage =
-        "New Item \"" + itemContent.substring(0, Math.min(itemContent.length(), 20)) + "\" in list " + testList.getTitle();
-      assertEquals(expectedMessage, capturedNotification.getMessage());
+        ArgumentCaptor<ListItem> listItemCaptor = ArgumentCaptor.forClass(ListItem.class);
+        verify(listItemRepository).save(listItemCaptor.capture());
+        ListItem capturedListItem = listItemCaptor.getValue();
+
+        assertEquals(itemContent, capturedListItem.getContent());
+        assertEquals(testList, capturedListItem.getList());
+        assertEquals(request.getOrder(), capturedListItem.getItemOrder());
+
+        verify(listRepository).save(testList);
+
+        ArgumentCaptor<ItemCreationNotification> notificationCaptor = ArgumentCaptor.forClass(ItemCreationNotification.class);
+        verify(roomService).notifyRoom(eq(listId), eq(testUser.getId()), notificationCaptor.capture());
+
+        ItemCreationNotification capturedNotification = notificationCaptor.getValue();
+
+        String expectedMessage =
+          "New Item \"" + itemContent.substring(0, Math.min(itemContent.length(), 20)) + "\" in list " + testList.getTitle();
+        assertEquals(expectedMessage, capturedNotification.getMessage());
+      }
     }
   }
 }
