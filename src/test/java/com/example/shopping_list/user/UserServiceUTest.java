@@ -14,6 +14,7 @@ import java.util.Set;
 import java.util.stream.Stream;
 
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -59,106 +60,112 @@ class UserServiceUTest {
     authentication = new UsernamePasswordAuthenticationToken(testUser, null);
   }
 
-  @Test
-  void testLoadUserByUsername_UserFound() {
+  @Nested
+  class LoadUserByUsername {
     final String email = "test@example.com";
-    when(userRepository.findByEmail(email)).thenReturn(Optional.of(testUser));
 
-    UserDetails userDetails = userService.loadUserByUsername(email);
+    @Test
+    void loadUserByUsername_shouldReturnUser_whenUserExists() {
+      when(userRepository.findByEmail(email)).thenReturn(Optional.of(testUser));
 
-    assertNotNull(userDetails);
-    assertEquals(testUser.getEmail(), userDetails.getUsername());
-    assertEquals(testUser.getPassword(), userDetails.getPassword());
-  }
+      UserDetails userDetails = userService.loadUserByUsername(email);
 
-  @Test
-  void testLoadUserByUsername_UserNotFound() {
-    final String email = "error@example.com";
-    when(userRepository.findByEmail(email)).thenReturn(Optional.empty());
+      assertNotNull(userDetails);
+      assertEquals(testUser.getEmail(), userDetails.getUsername());
+      assertEquals(testUser.getPassword(), userDetails.getPassword());
+    }
 
-    UsernameNotFoundException exception = assertThrows(UsernameNotFoundException.class, () -> userService.loadUserByUsername(email));
+    @Test
+    void loadUserByUsername_shouldThrowUsernameNotFoundException_whenUserNotFound() {
+      when(userRepository.findByEmail(email)).thenReturn(Optional.empty());
 
-    assertEquals("User not found", exception.getMessage());
-  }
+      UsernameNotFoundException exception = assertThrows(UsernameNotFoundException.class, () -> userService.loadUserByUsername(email));
 
-  @Test
-  void testGetUserById_UserFound() {
-    Long userId = 1L;
-    when(userRepository.findById(userId)).thenReturn(Optional.of(testUser));
-
-    User user = userService.getUserById(userId);
-
-    assertNotNull(user);
-    assertEquals(testUser, user);
-  }
-
-  @Test
-  void testGetUserById_UserNotFound() {
-    Long userId = 1L;
-
-    when(userRepository.findById(userId)).thenReturn(Optional.empty());
-
-    ResourceNotFoundException exception = assertThrows(ResourceNotFoundException.class, () -> { userService.getUserById(userId); });
-
-    assertEquals("User not found", exception.getMessage());
-  }
-
-  static Stream<Arguments> provideListData() { return Stream.of(Arguments.of(Set.of(2L, 3L), false), Arguments.of(Set.of(2L), true)); }
-
-  @ParameterizedTest(name = "Remove list with users {0}, should delete list: {1}")
-  @MethodSource("provideListData")
-  void testRemoveList_ValidCase(Set<Long> userIds, boolean shouldDeleteList) {
-    final Long listId = 1L;
-    final Long userId = 2L;
-
-    when(listRepository.findById(listId)).thenReturn(Optional.of(testList));
-    when(userListRepository.getUserIdsByListId(listId)).thenReturn(userIds);
-
-    userService.removeList(listId, authentication);
-
-    verify(userListRepository).deleteById(new UserListId(userId, listId));
-    verify(roomService).removeUserFromRoom(listId, userId);
-    verify(roomService).notifyRoom(eq(listId), eq(userId), any());
-
-    if (shouldDeleteList) {
-      verify(listRepository).delete(testList);
-    } else {
-      verify(listRepository, never()).delete(testList);
+      assertEquals("User not found", exception.getMessage());
     }
   }
 
-  @Test
-  void testRemoveList_UserNotInList() {
-    Long listId = 1L;
+  @Nested
+  class GetUserById {
+    Long userId = 1L;
 
-    when(listRepository.findById(listId)).thenReturn(Optional.of(testList));
-    when(userListRepository.getUserIdsByListId(listId)).thenReturn(Set.of(1L));
+    @Test
+    void getUserById_shouldReturnUser_whenUserExists() {
+      when(userRepository.findById(userId)).thenReturn(Optional.of(testUser));
 
-    AccessDeniedException exception = assertThrows(AccessDeniedException.class, () -> { userService.removeList(listId, authentication); });
+      User user = userService.getUserById(userId);
 
-    assertEquals("Can't remove list. List does not belong to you", exception.getMessage());
+      assertNotNull(user);
+      assertEquals(testUser, user);
+    }
+
+    @Test
+    void getUserById_shouldThrowResourceNotFoundException_whenUserNotFound() {
+      when(userRepository.findById(userId)).thenReturn(Optional.empty());
+
+      ResourceNotFoundException exception = assertThrows(ResourceNotFoundException.class, () -> { userService.getUserById(userId); });
+
+      assertEquals("User not found", exception.getMessage());
+    }
   }
 
-  @Test
-  void testRemoveList_ListNotFound() {
-    Long listId = 1L;
+  @Nested
+  class RemoveList {
+    final Long listId = 1L;
 
-    when(listRepository.findById(listId)).thenReturn(Optional.empty());
+    static Stream<Arguments> provideListData() { return Stream.of(Arguments.of(Set.of(2L, 3L), false), Arguments.of(Set.of(2L), true)); }
 
-    ResourceNotFoundException exception =
-      assertThrows(ResourceNotFoundException.class, () -> { userService.removeList(listId, authentication); });
+    @ParameterizedTest(name = "Remove list with users {0}, should delete list: {1}")
+    @MethodSource("provideListData")
+    void removeList_shouldRemoveList_whenUserAssignedToList(Set<Long> userIds, boolean shouldDeleteList) {
+      final Long userId = 2L;
 
-    assertEquals("List not found", exception.getMessage());
-  }
+      when(listRepository.findById(listId)).thenReturn(Optional.of(testList));
+      when(userListRepository.getUserIdsByListId(listId)).thenReturn(userIds);
 
-  @Test
-  void testRemoveList_UserNotFound() {
-    String email = "nonexistent@example.com";
+      userService.removeList(listId, authentication);
 
-    when(userRepository.findByEmail(email)).thenReturn(Optional.empty());
+      verify(userListRepository).deleteById(new UserListId(userId, listId));
+      verify(roomService).removeUserFromRoom(listId, userId);
+      verify(roomService).notifyRoom(eq(listId), eq(userId), any());
 
-    UsernameNotFoundException exception = assertThrows(UsernameNotFoundException.class, () -> { userService.loadUserByUsername(email); });
+      if (shouldDeleteList) {
+        verify(listRepository).delete(testList);
+      } else {
+        verify(listRepository, never()).delete(testList);
+      }
+    }
 
-    assertEquals("User not found", exception.getMessage());
+    @Test
+    void removeList_shouldThrowAccessDeniedException_whenUserNotAssignedToList() {
+      when(listRepository.findById(listId)).thenReturn(Optional.of(testList));
+      when(userListRepository.getUserIdsByListId(listId)).thenReturn(Set.of(1L));
+
+      AccessDeniedException exception =
+        assertThrows(AccessDeniedException.class, () -> { userService.removeList(listId, authentication); });
+
+      assertEquals("Can't remove list. List does not belong to you", exception.getMessage());
+    }
+
+    @Test
+    void removeList_shouldThrowResourceNotFoundException_whenListNotFound() {
+      when(listRepository.findById(listId)).thenReturn(Optional.empty());
+
+      ResourceNotFoundException exception =
+        assertThrows(ResourceNotFoundException.class, () -> { userService.removeList(listId, authentication); });
+
+      assertEquals("List not found", exception.getMessage());
+    }
+
+    @Test
+    void removeList_shouldThrowUsernameNotFoundException_whenUserNotFound() {
+      String email = "nonexistent@example.com";
+
+      when(userRepository.findByEmail(email)).thenReturn(Optional.empty());
+
+      UsernameNotFoundException exception = assertThrows(UsernameNotFoundException.class, () -> { userService.loadUserByUsername(email); });
+
+      assertEquals("User not found", exception.getMessage());
+    }
   }
 }
