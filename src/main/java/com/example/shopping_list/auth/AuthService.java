@@ -46,8 +46,8 @@ public class AuthService {
       return ResponseEntity.badRequest().body(new Response("Invalid credentials!"));
     } catch (Exception e) {
       log.error(e.getMessage());
-      return ResponseEntity.badRequest().body(new Response("Error during login!"
-                                                           + " " + e.getMessage()));
+      return ResponseEntity.internalServerError().body(new Response("Error during login!"
+                                                                    + " " + e.getMessage()));
     }
   }
 
