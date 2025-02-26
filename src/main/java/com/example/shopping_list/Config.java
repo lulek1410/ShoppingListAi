@@ -46,6 +46,7 @@ public class Config {
       ListItem orange = new ListItem(list1, "orange x4", 2);
       ListItem banana = new ListItem(list1, "banana", 3);
       ListItem potato = new ListItem(list2, "potato 500g", 1);
+      apple.setChecked(true);
 
       list1.setItems(Set.of(apple, orange, banana));
       list2.setItems(Set.of(potato));

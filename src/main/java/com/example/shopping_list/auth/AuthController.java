@@ -37,12 +37,12 @@ public class AuthController {
     }
     ResponseEntity<Response> loginResponse = authService.login(new LoginRequest(request.getEmail(), request.getPassword()));
     if (!loginResponse.getStatusCode().is2xxSuccessful()) {
-      return ResponseEntity.badRequest().body(new Response("User created but cant be logged in."));
+      return ResponseEntity.internalServerError().body(new Response("User created but cant be logged in."));
     }
 
     LoginResponse loginResponseBody = (LoginResponse)loginResponse.getBody();
     if (loginResponseBody == null) {
-      return ResponseEntity.badRequest().body(new Response("User created but cant be logged in. Login data empty."));
+      return ResponseEntity.internalServerError().body(new Response("User created but cant be logged in. Login data empty."));
     }
 
     LoginResponse registerResponse = new LoginResponse(loginResponseBody, "User registered successfully!");
