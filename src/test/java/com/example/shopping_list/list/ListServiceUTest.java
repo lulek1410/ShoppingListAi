@@ -12,6 +12,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -64,7 +65,12 @@ class ListServiceUTest {
 
   @Nested
   class GetListData {
-    final Long listId = testList.getId();
+    private Long listId;
+
+    @BeforeEach
+    void setup() {
+      listId = testList.getId();
+    }
 
     @Test
     void getListData_shouldReturnListResponse_whenListAssignedToUser() {
